@@ -36,13 +36,14 @@ for header in headers:
     columns_data = []
 
     for a in ready_data:
-        print("A")
+        if i >= len(a):
+            columns_data.append(0)
+            continue
+
         columns_data.append(a[i])
 
     data_frame_data[header] = columns_data
     i = i + 1
-
-print(data_frame_data)
 
 df = pd.DataFrame(data_frame_data) # tutaj podmień df. Ma zawierać wczytane dane.
 
@@ -65,15 +66,23 @@ print(wynik2)
 #listę (zmienne objaśniające) oraz liczbę(zmienna objaśniana).
 #nazwy mogą być dowolne.
 
+class Wine:
+    def __init__(self, names, values):
+        self.names = names
+        self.values = values
+
+    def __repr__(self):
+        return Wine(names=self.names, values=self.values)
+
 # Klasa powinna umożliwiać stworzenie nowego obiektu na podstawie
 # już istniejącego obiektu jak w pdf z lekcji lab6.
 # podpowiedź: metoda magiczna __repr__
 #Nie pisz metody __str__.
 
 #Zadanie 3 Utwórz przykładowy obiekt:   (3pkt)
-wynik3 = "przykladowy obiekt typu Wine" #do podmiany. Pamiętaj - ilość elementów, jak w zbiorze danych.
+wynik3 = Wine(names=df.columns, values=df.iloc[2]) #do podmiany. Pamiętaj - ilość elementów, jak w zbiorze danych.
 #Uwaga! Pamiętaj, która zmienna jest zmienną objaśnianą
-print(wynik3)
+print(wynik3.__repr__())
 
 #Zadanie 4.                             (3pkt)
 #Zapisz wszystkie dane z ramki danych do listy obiektów typu Wine.
