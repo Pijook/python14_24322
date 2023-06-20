@@ -28,7 +28,7 @@ def first_train():
     X = data.drop("Class", axis=1)
     y = data["Class"]
 
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.5, random_state=40)
 
     model = RandomForestClassifier()
     model.fit(X_train, y_train)
@@ -50,7 +50,7 @@ def load_data():
     X = data.drop("Class", axis=1)
     y = data["Class"]
 
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.5, random_state=40)
 
     model = RandomForestClassifier()
     model.fit(X_train, y_train)
@@ -110,6 +110,7 @@ def train_model():
 
 
 def predict_data():
+    global result_label
     new_data = pd.DataFrame([[
         float(entry_alcohol.get()),
         float(entry_malic_acid.get()),
@@ -128,13 +129,43 @@ def predict_data():
 
     prediction = model.predict(new_data)
     class_name = class_mapping[int(prediction[0])]
-    result_label.config("Predykcja klasy: {}".format(class_name))
+    result_label.config(text = "Predykcja klasy: {}".format(class_name))
 
 
 def rebuild_model():
     global model
     model = RandomForestClassifier()
     result_label.config(text="Przebudowano model")
+
+
+def add_data():
+    global data, tree
+
+    tree.delete(*tree.get_children())
+
+    new_data = [
+        int(entry_class.get()),
+        float(entry_alcohol.get()),
+        float(entry_malic_acid.get()),
+        float(entry_ash.get()),
+        float(entry_alcalinity.get()),
+        float(entry_magnesium.get()),
+        float(entry_total_phenols.get()),
+        float(entry_flavanoids.get()),
+        float(entry_nonflavanoid.get()),
+        float(entry_proanthocyanins.get()),
+        float(entry_color_intensity.get()),
+        float(entry_hue.get()),
+        float(entry_od280.get()),
+        float(entry_proline.get())]
+
+    data.loc[len(data)] = new_data
+
+    for index, row in data.iterrows():
+        row_list = row.tolist()
+        row_list[0] = class_mapping[int(row_list[0] - 1)]
+        tree.insert("", "end", values=row_list)
+
 
 
 window = tk.Tk()
@@ -214,17 +245,24 @@ entry_proline = tk.Entry(window)
 entry_proline.insert(0, "Proline")
 entry_proline.grid(row=14, column=0)
 
+entry_class = tk.Entry(window)
+entry_class.insert(0, "Class")
+entry_class.grid(row=15, column=0)
+
 predict_button = tk.Button(window, text="Przewiduj", command=predict_data)
-predict_button.grid(row=15, column=0)
+predict_button.grid(row=16, column=0)
 
 result_label = tk.Label(window, text="")
-result_label.grid(row=16, column=0)
+result_label.grid(row=17, column=0)
 
 train_button = tk.Button(window, text="Trenuj model", command=train_model)
-train_button.grid(row=17, column=0, pady=10)
+train_button.grid(row=18, column=0, pady=10)
+
+add_button = tk.Button(window, text="Dodaj", command=add_data)
+add_button.grid(row=19, column=0)
 
 rebuild_button = tk.Button(window, text="Ponowne zbudowanie modelu", command=rebuild_model)
-rebuild_button.grid(row=18, column=00, pady=10)
+rebuild_button.grid(row=20, column=00, pady=10)
 
 window.mainloop()
 
